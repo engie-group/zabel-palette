@@ -269,7 +269,7 @@ ACTION_BUTTON_TMPL = '<input class="ok" type="button" onclick="javascript:do_for
 
 ## Actions
 
-ACTION_TMPL = '<a href="javascript:show_newapp(\'{action}\');">{label}</a>' ''
+ACTION_TMPL = '<a href="javascript:show_newapp(\'{action}\');">{label}</a>'
 
 
 ## Tables
@@ -323,7 +323,9 @@ DIALOG_TMPL = '''<div id="{{id}}" class="dialog">
        <h2>{{title}}</h2>
        <form id="{{id}}form" name="{{id}}form" action="?a={{id}}" method="post">
        <table>
+       <div class="detailsBody">
        {{body}}
+       </div>
        <tr>
            <td colspan="2">
                <input class="cancel" type="button"
@@ -434,7 +436,9 @@ def _make_request(r, extra=None):
 _table_cpt = 0  # used to generate unique IDs for tables
 
 
-def make_table(source, cols, large=True, searchable=None, width=None):
+def make_table(
+    source, cols, large=True, searchable=None, width=None, sortable=False
+):
     """Return HTML-ready tabular representation for source.
 
     - `source`: a collection of rows
@@ -469,10 +473,13 @@ def make_table(source, cols, large=True, searchable=None, width=None):
 
     right_aligned_header = ' class="number"'
     headers = [
-        '<th width="{width}%"{cls}>{header}</th>'.format(
+        '<th width="{width}%"{cls}>{header}{sorting_button}</th>'.format(
             header=c[1],
             width=abs(int(c[2])),
             cls=right_aligned_header if c[2] < 0 else '',
+            sorting_button=f'<button class="sort" data-sort={c[4]}></button>'
+            if sortable
+            else '',
         )
         for c in cols
     ]
