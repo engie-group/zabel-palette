@@ -17,7 +17,7 @@ setup(
     description='The Zabel **palette** library',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/engie-group/zabel',
+    url='https://github.com/engie-group/zabel-palette',
     author='Martin Lafaix',
     author_email='martin.lafaix@external.engie.com',
     license='Eclipse Public License 2.0',
