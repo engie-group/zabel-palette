@@ -1,6 +1,14 @@
+# Copyright (c) 2019 Martin Lafaix (martin.lafaix@external.engie.com)
+#
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+
 """Asynchronous helpers.
 
-A bit like concurrent.futures, but without the Executor requirement.
+A bit like **concurrent.futures**, but without the Executor requirement.
 """
 
 __all__ = [
@@ -30,7 +38,7 @@ def _submit(f, *a):
 def async_call(f):
     """Return an asynchronous computation of calling f.
 
-    f is a function of zero arguments that returns an iterable.
+    `f` is a function of zero arguments that returns an iterable.
     """
     q = queue.Queue()
     return [q, _submit(lambda q: q.put(f()), q)]
@@ -39,9 +47,10 @@ def async_call(f):
 def async_map(f, xs):
     """Return an asynchronous computation of calling f on elements of xs.
 
-    f is a function of one argument, an x (member of xs), that
-        returns an iterable.
-    xs is an iterable.
+    `f` is a function of one argument, an `x` (member of `xs`), that
+    returns an iterable.
+
+    `xs` is an iterable.
     """
     q = queue.Queue()
     return [q] + [_submit(lambda x, q: q.put(f(x)), x, q) for x in xs]
@@ -60,12 +69,13 @@ def async_await(ac):
 def collect(f, xs):
     """Return the aggregated result of calling f on elements of xs.
 
-    f is a function of one argument, an x (member of xs), that
-        returns an iterable.
-    xs is an iterable.
+    `f` is a function of one argument, an `x` (member of `xs`), that
+    returns an iterable.
 
-    f runs in parallel on elements of xs.
+    `xs` is an iterable.
 
-    It is equivalent to async_await(async_map(f, xs)).
+    `f` runs in parallel on elements of `xs`.
+
+    It is equivalent to `async_await(async_map(f, xs))`.
     """
     return async_await(async_map(f, xs))

@@ -1,4 +1,12 @@
-## Misc. helpers
+# Copyright (c) 2019 Martin Lafaix (martin.lafaix@external.engie.com)
+#
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+
+"""Misc. helpers."""
 
 import os
 import re
@@ -7,7 +15,7 @@ import re
 def compose(*fs):
     """Return a new function that compose functions in fs.
 
-    Functions in fs are unary functions.
+    Functions in `fs` are unary functions.
     """
 
     def inner(arg):
@@ -19,9 +27,9 @@ def compose(*fs):
 
 
 def compose2(*fs):
-    """Return a new function that compose functions in fs.
+    """Return a new function that compose functions in `fs`.
 
-    Functions in fs are unary functions, except for the last,
+    Functions in `fs` are unary functions, except for the last,
     that may take any number of arguments.
     """
 
@@ -37,9 +45,9 @@ def compose2(*fs):
 def get_tag_data(tag, text, default=None):
     """Return the tag content as found in text.
 
-    tag is an xml tag name (e.g., 'id', 'version', etc.).
-    test is a string possibly containing the tag.
-    default is the optional tag value, returned if tag not in text.
+    - `tag` is an XML tag name (e.g., 'id', 'version', etc.).
+    - `text` is a string possibly containing the tag.
+    - `default` is the optional tag value, returned if tag not in text.
 
     Only return the content of the first matching tag in text.
 

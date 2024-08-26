@@ -1,0 +1,77 @@
+site_name: Zabel Palette
+
+generate:
+  - palette.md:
+    - zabel.palette
+  - palette/async.md:
+    - zabel.palette.async++
+  - palette/date.md:
+    - zabel.palette.date++
+  # - palette/db.md:
+  #   - zabel.palette.db++
+  - palette/html.md:
+    - zabel.palette.html++
+  - palette/http.md:
+    - zabel.palette.http++
+  - palette/i18n.md:
+    - zabel.palette.i18n++
+  - palette/misc.md:
+    - zabel.palette.misc++
+  - palette/text.md:
+    - zabel.palette.text++
+  - palette/timeline.md:
+    - zabel.palette.timeline++
+
+pages:
+  - Home: index.md << ../README.md
+  - API Documentation:
+    - Palette Library:
+      - Overview: palette.md
+      - zabel.palette.async: palette/async.md
+      - zabel.palette.date: palette/date.md
+      # - zabel.palette.db: palette/db.md
+      - zabel.palette.html: palette/html.md
+      - zabel.palette.http: palette/http.md
+      - zabel.palette.i18n: palette/i18n.md
+      - zabel.palette.misc: palette/misc.md
+      - zabel.palette.text: palette/text.md
+      - zabel.palette.timeline: palette/timeline.md
+
+sort: name
+theme:
+  name: material
+  features:
+    - navigation.indexes # https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/#section-index-pages
+    - navigation.instant
+    # - navigation.tabs
+    - content.tabs.link
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition            # https://squidfunk.github.io/mkdocs-material/reference/admonitions/
+  - meta                  # https://www.mkdocs.org/user-guide/writing-your-docs/#meta-data
+  - tables                # https://www.mkdocs.org/user-guide/writing-your-docs/#tables
+  - codehilite            # https://yakworks.github.io/docmark/extensions/codehilite/
+  - attr_list             # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#admonition
+  - md_in_html
+  - smarty
+  - meta
+  - def_list
+  - pymdownx.superfences:
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - toc:
+      permalink: true
+      toc_depth: "1-4"
+
+headers: markdown

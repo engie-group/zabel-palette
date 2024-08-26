@@ -6,7 +6,10 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
-## Date helpers
+"""Date helpers.
+
+Note: not localized.  Text forms are in French.
+"""
 
 import datetime
 
@@ -58,11 +61,11 @@ days = [
 
 
 def text_as_date(text):
-    """Return date object corresponding to text (of form yyyy-mm-dd).
+    """Return date object corresponding to `tex`t (of form `yyyy-mm-dd`).
 
     Returned date object corresponds to end of day (23:59:59).
 
-    Returns 1900-01-01 if text is not a valid date.
+    Returns 1900-01-01 if `text` is not a valid date.
     """
     try:
         yyyy, mm, dd = text.split('-')
@@ -75,12 +78,12 @@ def text_as_date(text):
 
 
 def date_as_text(d):
-    """Return textual representation of date d (of form yyyy-mm-dd).
+    """Return textual representation of date `d` (of form `yyyy-mm-dd`).
 
     Textual representation is of form 'n mmmm yyyy', e.g.,
     '4 décembre 2015'.
 
-    Returns textual representation of 1900-01-01 if d is invalid.
+    Returns textual representation of 1900-01-01 if `d` is invalid.
     """
     date = text_as_date(d)
     return date_as_text_tmpl.format(
@@ -91,23 +94,23 @@ def date_as_text(d):
 
 
 def date_as_dd_mm(d):
-    """Return dd/mm representation of date d (of form yyyy-mm-dd).
+    """Return dd/mm representation of date `d` (of form `yyyy-mm-dd`).
 
-    Returns 01/01 (dd/mm for 1900-01-01) if d is invalid.
+    Returns 01/01 (dd/mm for 1900-01-01) if `d` is invalid.
     """
     return '{date.day:02d}/{date.month:02d}'.format(date=text_as_date(d))
 
 
 def date_as_mm_dd(d):
-    """Return mm/dd representation of date d (of form yyyy-mm-dd).
+    """Return mm/dd representation of date `d` (of form `yyyy-mm-dd`).
 
-    Returns 01/01 (mm/dd for 1900-01-01) if d is invalid.
+    Returns 01/01 (mm/dd for 1900-01-01) if `d` is invalid.
     """
     return '{date.month:02d}/{date.day:02d}'.format(date=text_as_date(d))
 
 
 def datetime_as_text(dt):
-    """Return textual representation for datetime dt.
+    """Return textual representation for datetime `dt`.
 
     Textual representation is of form 'date_as_text() à hh:mm', e.g.,
     '4 décembre 2015 à 5h04'.
@@ -118,7 +121,7 @@ def datetime_as_text(dt):
 
 
 def datetime_as_absolute_text(dt):
-    """Return absolute textual representation for datetime dt.
+    """Return absolute textual representation for datetime `dt`.
 
     Absolute textual representation is of form 'yyyy-mm-dd&nbsp;hh:mm:ss'.
     """
@@ -126,7 +129,7 @@ def datetime_as_absolute_text(dt):
 
 
 def datetime_as_humanized_text(dt):
-    """Return a human-readable relative form for datetime dt.
+    """Return a human-readable relative form for datetime `dt`.
 
     For dates older than 5 days, an absolute date and time is returned.
     """
@@ -148,9 +151,9 @@ def datetime_as_humanized_text(dt):
 
 
 def stamp_as_text(stamp):
-    """Return textual representation of stamp (of form yymmddhhmmss).
+    """Return textual representation of `stamp` (of form `yymmddhhmmss`).
 
-    Textual representation is as datetime_as_text(), e.g.,
+    Textual representation is as `datetime_as_text()`, e.g.,
     '4 décembre 2015 à 5h04'.
     """
     return datetime_as_text(

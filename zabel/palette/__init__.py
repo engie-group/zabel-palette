@@ -6,9 +6,9 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
-"""The root of the **mlf** library.
+"""The root of the **zabel-palette** library.
 
-The **mlf** library offers the following modules:
+The **zabel-palette** library offers the following modules:
 
 - async
 - date

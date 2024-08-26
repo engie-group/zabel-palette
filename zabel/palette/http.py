@@ -6,7 +6,7 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
-# HTTP Helpers
+"""HTTP Helpers."""
 
 import cgi
 import datetime
@@ -22,8 +22,8 @@ from .timeline import get_timeline
 from .text import safe, pprint
 
 
-HOST_NAME = escape(os.environ['HTTP_HOST'])
-SCRIPT_NAME = escape(os.environ['SCRIPT_NAME'])
+HOST_NAME = escape(os.environ.get('HTTP_HOST', 'http_host'))
+SCRIPT_NAME = escape(os.environ.get('SCRIPT_NAME', 'script_name'))
 pyname = os.path.split(SCRIPT_NAME)[1]
 
 _admin = False
@@ -204,71 +204,83 @@ def _do_forward(destination, msg=None):
 
 
 def handle_request(application, queries):
-    """Handle the request defined by queries.
+    """Handle the request defined by `queries`.
 
     Authentication is performed beforehand.
 
-    application is a dict containing (at least) two entries, routes and
-        default.
-    queries is a dict (possibly None, possibly empty) of args: values,
-        all items being strings. (It is typically build from the
-        request URI as in 'dict(parse_qsl(urlparse(URI)[4]))'.)
+    - `application` is a dictionary containing (at least) two entries,
+      `routes` and `default`.
+    - `queries` is a dictionary (possibly `None`, possibly empty) of
+      `args`: `values`, all items being strings. (It is typically build
+      from the request URI as in `dict(parse_qsl(urlparse(URI)[4]))`.)
 
-    routes defines routing (see below).
-    default is a pair present in routes.
+    ### Application
 
-    If queries contains more than one request, only the one with the
-    highest priority is processed (as defined by routes, first matching
-    entry wins).
+    - `routes` defines routing (see below).
+    - `default` is a pair present in routes.
 
-    If no matching route is found, the default route in routes[default]
+    `routes` is a non-empty list of `[(string, bool), patterns, ...]`:
+
+    - `(string, bool)` is a pair, whose first element is a string (`arg`
+      in query) and second element is `True` if admin rights are
+      required for the routes or `False` otherwise).
+    - `patterns` is a dictionary listing the routes patterns:
+      `{pattern: fn, ...}`.
+
+    `pattern` is a string like `'foo[/bar]'`, or `Ellipsis` (`...`). If
+    `foo` is a place-holder (`'{}'`), `bar` must be one too if specified.
+
+    `fn` is a function of one or two arguments (two if pattern includes a
+    '/', one otherwise). The first argument will be the leading
+    element (what is before the first '/'), the second the remaining
+    elements (what is after, if applicable). This function either
+    exits (in wich case the script ends) or returns a string that
+    is used as a redirection.
+
+    #### Pattern examples:
+
+    ```
+    'abc'     -- matches 'abc' only
+    'abc/d'   -- matches 'abc/d' only
+    'abc/{}'  -- matches 'abc/xxx' and 'abc/', but not 'abc'
+    '{}'      -- matches 'abc', 'def', but neither '' nor 'abc/def'
+    '{}/abc'  -- matches nothing (invalid construction)
+    '{}/{}'   -- matches 'abc/xxx', 'abc/', and 'def/ghi', but not
+              -- 'abc'
+    ...       -- matches everything
+    ```
+
+    #### Routes example:
+
+    ```
+    [('a', True), {'foo': bar, '{}/{}': xyzzy},
+     ('b', False), {...: baz}]
+    ```
+
+    It will handle queries like:
+
+    ```
+    a=foo     -- assuming admin rights, call bar('foo')
+    a=x/y/z   -- assuming admin rights, call xyzzy('x', 'y/z')
+    b=        -- regardless of admin status, call baz('')
+    b=x       -- regardless of admin status, call baz('x')
+    b=x/y/z   -- regardless of admin status, call baz('x', 'y/z')
+    a=ABC     -- not handled (except if default is ('b', False), in
+              -- which case baz(None) is called.
+    ```
+
+    ### Queries
+
+    If `queries` contains more than one request, only the one with the
+    highest priority is processed (as defined by `routes`, first
+    matching entry wins).
+
+    If no matching route is found, the default route in `routes[default]`
     will be used (an error is raised if there is no default route
     defined).
 
     A request either completes or returns a new request. If a new
     request is returned, it will be handled (possibly recursively).
-
-    routes is a non-empty list of [(string, bool), patterns, ...]
-
-    (string, bool) is a pair, whose first element is a string (arg in
-        query) and second element is True if admin rights are required
-        for the routes or False otherwise).
-    patterns is a dict listing the routes patterns: {pattern: fn, ...}.
-
-    pattern is a string like 'foo[/bar]', or Ellipsis (...). If foo
-        is a place-holder ('{}'), bar must be one too if specified.
-    fn is a function of one or two arguments (two if pattern includes a
-        '/', one otherwise). The first argument will be the leading
-        element (what is before the first '/'), the second the remaining
-        elements (what is after, if applicable). This function either
-        exits (in wich case the script ends) or returns a string that
-        is used as a redirection.
-
-    Pattern examples:
-
-        'abc'     -- matches 'abc' only
-        'abc/d'   -- matches 'abc/d' only
-        'abc/{}'  -- matches 'abc/xxx' and 'abc/', but not 'abc'
-        '{}'      -- matches 'abc', 'def', but neither '' nor 'abc/def'
-        '{}/abc'  -- matches nothing (invalid construction)
-        '{}/{}'   -- matches 'abc/xxx', 'abc/', and 'def/ghi', but not
-                  -- 'abc'
-        ...       -- matches everything
-
-    Routes example:
-
-        [('a', True), {'foo': bar, '{}/{}': xyzzy},
-         ('b', False), {...: baz}]
-
-    It will handle queries like:
-
-        a=foo     -- assuming admin rights, call bar('foo')
-        a=x/y/z   -- assuming admin rights, call xyzzy('x', 'y/z')
-        b=        -- regardless of admin status, call baz('')
-        b=x       -- regardless of admin status, call baz('x')
-        b=x/y/z   -- regardless of admin status, call baz('x', 'y/z')
-        a=ABC     -- not handled (except if default is ('b', False), in
-                  -- which case baz(None) is called.
     """
     _handle_access_actions_and_controls(application, queries)
 
@@ -436,8 +448,8 @@ def _emit_footer():
 def attachement(contenttype='text/csv', filename='export.csv'):
     """Decorate a function so that it renders an attachments.
 
-    Whatever the function produces is presented as a file 'filename'
-    to the client, of type contenttype.
+    Whatever the function produces is presented as a file `filename`
+    to the client, of type `contenttype`.
     """
 
     def wrap(a):
@@ -456,16 +468,16 @@ def attachement(contenttype='text/csv', filename='export.csv'):
 def page(title, restricted, toplevel=False):
     """Decorate a function so that it renders a web page.
 
-    title is the produced page title.  It can contains positional
+    - `title` is the produced page title.  It can contains positional
         substitution parameters, which will be replaced by the
         corresponding parameters passed to the decorated function.
-    restricted is either True or False. If True, only admin users
+    - `restricted` is either True or False. If True, only admin users
         are allowed, others will see an 'access denied' page.
-    toplevel is an optional boolean parameter, defaulting to False.
+    - `toplevel` is an optional boolean parameter, defaulting to False.
         If set to True, the page will contain a 'logout' option.
         Otherwise, it will contain a 'go back' option instead.
 
-    Produces a page of type text/html.
+    Produces a page of type `text/html`.
     """
 
     def wrap(p):
@@ -541,8 +553,14 @@ def get_form_data(*fields):
     """
     fs = cgi.FieldStorage()
     return [
-        (fs.getlist(f.strip('!*')) if f[0] == '*' else fs[f.strip('!*')].value)
-        if f.strip('!*') in fs
-        else (None if f[0] in '!*' else 'no' + f)
+        (
+            (
+                fs.getlist(f.strip('!*'))
+                if f[0] == '*'
+                else fs[f.strip('!*')].value
+            )
+            if f.strip('!*') in fs
+            else (None if f[0] in '!*' else 'no' + f)
+        )
         for f in fields
     ]

@@ -477,9 +477,11 @@ def make_table(
             header=c[1],
             width=abs(int(c[2])),
             cls=right_aligned_header if c[2] < 0 else '',
-            sorting_button=f'<button class="sort" data-sort={c[4]}></button>'
-            if sortable
-            else '',
+            sorting_button=(
+                f'<button class="sort" data-sort={c[4]}></button>'
+                if sortable
+                else ''
+            ),
         )
         for c in cols
     ]
@@ -722,9 +724,11 @@ def make_select(name, os, selected=0):
         multi='' if single else ' multiple="multiple"',
         options='\n'.join(
             '<option{selected}>{o}</option>'.format(
-                selected=select
-                if (o == os[selected] if single else o in selected)
-                else '',
+                selected=(
+                    select
+                    if (o == os[selected] if single else o in selected)
+                    else ''
+                ),
                 o=o,
             )
             for o in sorted(os)
